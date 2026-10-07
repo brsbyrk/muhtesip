@@ -56,9 +56,9 @@ impl Rule for RunnerLabel {
 /// A list is a conjunction — the runner must carry every label — and two different operating
 /// systems cannot both be true, so such a job never schedules.
 ///
-/// Deliberately narrower than actionlint, which also treats two *versions* of one system as a
-/// conflict. Version-level conflicts are the kind of claim that false-positives on real files,
-/// and a false report costs more than a missing one.
+/// Deliberately narrow: two *versions* of one system are not treated as a conflict. Version-level
+/// claims are the kind that false-positive on real files, and a false report costs more than a
+/// missing one.
 fn report_conflicts(rule: &RunnerLabel, job: &Job, line: usize, findings: &mut Vec<Finding>) {
     let mut families = job
         .runs_on

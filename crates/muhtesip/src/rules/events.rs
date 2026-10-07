@@ -161,9 +161,8 @@ impl TriggerEvents {
     /// Check the `on.schedule` entries: the expression, its interval, and the timezone name.
     ///
     /// These belong with the event checks because that is where the platform puts them — a malformed
-    /// schedule is refused with the workflow, before any job is scheduled — and because actionlint
-    /// groups them into its own `events` rule too. A schedule the platform cannot run is not a style
-    /// question.
+    /// schedule is refused with the workflow, before any job is scheduled. A schedule the platform
+    /// cannot run is not a style question.
     fn check_schedules(&self, doc: &Document, findings: &mut Vec<Finding>) {
         for entry in &doc.schedules {
             let Some(cron_value) = &entry.cron else {

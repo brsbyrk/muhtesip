@@ -8,12 +8,12 @@
 //! - GitHub's own documentation, as Markdown in the `github/docs` repository:
 //!   `data/reusables/actions/supported-github-runners.md`, `…/larger-runners-table.md`, and
 //!   `…/single-cpu-table-row.md` (the source of `ubuntu-slim`).
-//! - `actionlint`'s curated list (`rule_runner_label.go`, `allGitHubHostedRunnerLabels`), which
-//!   carries the GitHub-owned larger-runner labels (`*-cores`) the docs tables above omit.
+//! - A curated third-party label table, which carries the GitHub-owned larger-runner labels
+//!   (`*-cores`, `windows-latest-8-cores`) that the docs tables above omit.
 //!
-//! Neither source is a superset: the docs list `ubuntu-26.04`, `xcode-27`, and
-//! `windows-11-vs2026-arm`, which actionlint lacks; actionlint lists `ubuntu-latest-*-cores`,
-//! `windows-latest-8-cores`, and `ubuntu-slim`, which these tables omit. Hence the union.
+//! Neither reading is a superset: the docs list `ubuntu-26.04`, `xcode-27`, and
+//! `windows-11-vs2026-arm`, which the curated table lacks; the curated table carries labels the
+//! docs tables omit. Hence the union.
 //!
 //! The timezone names live in their own module beside this one: 598 of them is a table, not a file's
 //! worth of editing, and they come from the tz database rather than from a vendor's docs.
@@ -145,9 +145,9 @@ fn in_table(table: &[&str], label: &str) -> bool {
 /// The permission scopes the platform exposes.
 ///
 /// Union of the docs table
-/// (`data/reusables/actions/github-token-available-permissions.md`, read 2026-10-03) and actionlint's
-/// `rule_permissions.go`. Neither is a superset: the docs list `code-quality` and
-/// `vulnerability-alerts`; actionlint lists `models` and `repository-projects`.
+/// (`data/reusables/actions/github-token-available-permissions.md`, read 2026-10-03) and a curated
+/// third-party table. Neither is a superset: the docs list `code-quality` and
+/// `vulnerability-alerts`, and the other lists `models` and `repository-projects`.
 pub(crate) const PERMISSION_SCOPES: &[&str] = &[
     "actions",
     "artifact-metadata",
@@ -171,9 +171,10 @@ pub(crate) const PERMISSION_SCOPES: &[&str] = &[
 
 /// The access a single permission may take.
 ///
-/// Deliberately the general set the docs state, not the per-scope narrowing actionlint carries
-/// (`id-token` takes only `write`/`none`, `models` only `read`/`none`): a per-scope claim is the
-/// kind that goes stale and false-positives, and a false report costs more than a missing one.
+/// Deliberately the general set the docs state, not the per-scope narrowing a stricter reading
+/// carries (`id-token` takes only `write`/`none`, `models` only `read`/`none`): a per-scope claim
+/// is the kind that goes stale and false-positives, and a false report costs more than a missing
+/// one.
 pub(crate) const PERMISSION_ACCESS: &[&str] = &["read", "write", "none"];
 
 /// The whole-block values that set every permission at once.
@@ -274,7 +275,7 @@ pub(crate) fn shell_platform(labels: &[String]) -> ShellPlatform {
 /// Workflow commands the platform retired, each with the form that replaces it.
 ///
 /// Sources: the deprecation announcements of 2020-10-01 (`set-env`, `add-path`) and 2022-10-11
-/// (`save-state`, `set-output`), the same two actionlint's `rule_deprecated_commands.go` cites.
+/// (`save-state`, `set-output`).
 pub(crate) const DEPRECATED_COMMANDS: &[(&str, &str)] = &[
     ("set-output", r#"echo "{name}={value}" >> $GITHUB_OUTPUT"#),
     ("save-state", r#"echo "{name}={value}" >> $GITHUB_STATE"#),
@@ -325,9 +326,8 @@ pub(crate) fn deprecated_commands_in(script: &str) -> Vec<(&str, usize)> {
 
 /// The activity types each trigger event accepts, as documented.
 ///
-/// Source: GitHub's "Events that trigger workflows" (read 2026-10-03), cross-checked against
-/// the table actionlint generates from the same page. An event mapped to an empty list accepts
-/// no activity type.
+/// Source: GitHub's "Events that trigger workflows" (read 2026-10-03). An event mapped to an empty
+/// list accepts no activity type.
 pub(crate) const TRIGGER_ACTIVITY_TYPES: &[(&str, &[&str])] = &[
     ("branch_protection_rule", &["created", "edited", "deleted"]),
     (
@@ -591,8 +591,8 @@ pub(crate) const WORKFLOW_DISPATCH_INPUT_TYPES: &[&str] =
 
 /// The most inputs one `workflow_dispatch` block may declare.
 ///
-/// The platform's limit, taken from the documentation the incumbent validator cites for it in
-/// `rule_events.go`: "maximum number of inputs for `workflow_dispatch` event is 25".
+/// The platform's limit, from the documentation: "maximum number of inputs for `workflow_dispatch`
+/// event is 25".
 pub(crate) const WORKFLOW_DISPATCH_INPUT_CAP: usize = 25;
 
 /// One field of a cron expression: what it is called, the values it accepts, and its names.
@@ -638,7 +638,7 @@ const DAY_NAMES: [(&str, u32); 7] = [
 /// The five fields of a cron expression, in the order they are written.
 ///
 /// The bounds are the usual crontab ones. The platform's docs name the operators (`*`, `,`, `-`, `/`)
-/// but not the bounds, and the incumbent validator accepts names — so names are accepted here too:
+/// but not the bounds — names are accepted here too:
 /// rejecting a cron the platform accepts is a false positive, which is the worse of the two errors.
 pub(crate) const CRON_FIELDS: [CronField; 5] = [
     CronField {

@@ -26,8 +26,8 @@ fn the_fixture_reports_the_unknown_scope_and_the_unknown_access_in_line_order() 
 
 #[test]
 fn scopes_from_either_source_are_accepted() {
-    // `code-quality` and `vulnerability-alerts` are docs-only; `models` and
-    // `repository-projects` are actionlint-only. The union must accept all of them.
+    // `code-quality` and `vulnerability-alerts` come from the docs; `models` and
+    // `repository-projects` from the other table. The union must accept all of them.
     let text = "permissions:\n  code-quality: read\n  models: read\n  vulnerability-alerts: none\n  repository-projects: write\n  id-token: write\njobs:\n  build:\n    steps: []\n";
     assert!(entries(text).is_empty(), "{:?}", entries(text));
 }

@@ -46,7 +46,7 @@ fn the_declared_severity_is_error() {
 
 #[test]
 fn documented_hosted_labels_are_accepted_across_every_family() {
-    // One per family, including the labels actionlint's stale list lacks.
+    // One per family, including the newest labels.
     let labels = [
         "ubuntu-latest",
         "ubuntu-26.04-arm",
@@ -119,8 +119,8 @@ fn labels_naming_different_systems_conflict() {
 
 #[test]
 fn two_versions_of_one_system_do_not_conflict() {
-    // Deliberately narrower than actionlint: a version-level conflict claim is the kind that
-    // false-positives on real files, and a false report costs more than a missing one.
+    // Deliberately narrow: a version-level conflict claim is the kind that false-positives on real
+    // files, and a false report costs more than a missing one.
     let text = "jobs:\n  build:\n    runs-on: [ubuntu-latest, ubuntu-22.04]\n    steps: []\n";
     assert!(
         runner_findings(text).is_empty(),

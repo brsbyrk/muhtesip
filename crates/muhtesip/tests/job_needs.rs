@@ -81,7 +81,7 @@ fn two_separate_cycles_are_both_reported() {
     assert_eq!(
         found.len(),
         4,
-        "actionlint reports only the first cycle: {found:?}"
+        "both cycles are reported, not only the first: {found:?}"
     );
 }
 

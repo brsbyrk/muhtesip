@@ -4,8 +4,8 @@
 //! operators (`*`, `,`, `-`, `/`), but it does not publish the field bounds or say whether names like
 //! `JAN` are allowed. Two decisions follow from that, both made to avoid the worse error:
 //!
-//! - **Names are accepted.** The incumbent validator accepts them, and rejecting a cron the platform
-//!   accepts is a false positive, while accepting one it rejects is only a missing finding.
+//! - **Names are accepted.** Rejecting a cron the platform accepts is a false positive, while
+//!   accepting one it rejects is only a missing finding.
 //! - **`@daily`-style descriptors are rejected**, because the docs state that outright: "GitHub Actions
 //!   does not support the non-standard syntax `@yearly`, `@monthly`, `@weekly`, `@daily`, `@hourly`,
 //!   and `@reboot`."

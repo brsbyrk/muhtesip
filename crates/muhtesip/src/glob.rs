@@ -1,12 +1,12 @@
 //! Validate the filter patterns the platform accepts in `branches`, `tags`, and `paths`.
 //!
-//! Ported from actionlint's `globValidator` state machine. Two deliberate differences:
+//! Adapted from another linter's `globValidator` state machine. Two deliberate differences:
 //!
-//! - **No columns.** actionlint reports the column of each error; the model here carries lines and
-//!   not columns, so a finding points at the pattern's line. The detections are the same.
-//! - **No `text/scanner`.** Go's scanner skips whitespace when peeking; ours reads every character.
-//!   GitHub does not accept whitespace in a ref name anyway, and the path check already reports
-//!   leading and trailing spaces, so the practical difference is nil — but it is a difference.
+//! - **No columns.** A finding points at the pattern's line; the model here carries lines and not
+//!   columns. The detections are the same.
+//! - **No whitespace skipping while peeking.** Every character is read. GitHub does not accept
+//!   whitespace in a ref name anyway, and the path check already reports leading and trailing
+//!   spaces, so the practical difference is nil — but it is a difference.
 //!
 //! Syntax reference: the platform's "filter pattern cheat sheet".
 
