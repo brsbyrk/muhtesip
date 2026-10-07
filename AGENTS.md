@@ -1,7 +1,6 @@
 # AGENTS.md — muhtesip conventions
 
-> **Resuming work?** Start at [`README.md`](README.md), then [`docs/ROADMAP.md`](docs/ROADMAP.md)
-> for what is next. This file describes the conventions.
+> **Resuming work?** Start at [`README.md`](README.md). This file describes the conventions.
 
 ## What this is
 
@@ -61,8 +60,6 @@ AGENTS.md               this file
 LICENSE                 the MIT text; each crate symlinks to it so the packaged crate carries it
 scripts/                repo scripts (package-release.sh)
 docs/
-  SPEC.md               the specification of record: the library contract, vocabulary, slices
-  ROADMAP.md            what is done and what is next
   rules.md              rule reference — the target of every rule's docs_url()
 crates/
   muhtesip/             the library: parse a workflow document, return findings, print nothing

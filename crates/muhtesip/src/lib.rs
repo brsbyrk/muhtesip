@@ -1,7 +1,7 @@
 //! A fast, embeddable linter for CI workflow files.
 //!
 //! The library reads a workflow document and returns findings. It never prints, exits,
-//! or touches the filesystem — see `docs/SPEC.md` for the contract and the vocabulary.
+//! or touches the filesystem.
 
 #![cfg_attr(test, allow(clippy::unwrap_used, clippy::panic))]
 

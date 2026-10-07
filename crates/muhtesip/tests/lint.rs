@@ -70,12 +70,12 @@ fn malformed_document_is_an_error_not_a_panic() {
 /// A multi-line flow sequence whose first item is a quoted scalar is valid YAML — libyaml reads it,
 /// and the platform runs workflows that contain it — but the `yaml-rust2` parser rejects it, so
 /// muhtesip answers with a parse refusal and reports nothing for that file. Found by a run over a
-/// pinned corpus of real workflows (the defect is recorded in `docs/ROADMAP.md`); `yaml-rust2` is
+/// pinned corpus of real workflows; `yaml-rust2` is
 /// already at its newest release.
 ///
 /// This test asserts the WRONG behaviour on purpose. When the dependency is fixed or replaced, it
 /// will start failing, and that failure is the instruction: invert the assertion and delete the
-/// entry in `docs/ROADMAP.md`.
+/// note about it.
 #[test]
 fn a_quoted_first_item_in_a_multiline_flow_sequence_is_rejected() {
     let text = "jobs:\n  a:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    x: [\n      \"one\",\n    ]\n";
@@ -87,7 +87,7 @@ fn a_quoted_first_item_in_a_multiline_flow_sequence_is_rejected() {
 
 /// An aliased value is a value: it must reach every rule that looks at it.
 ///
-/// This was defect 2 in `docs/ROADMAP.md` — the event builder ignored `Event::Alias`, so a step
+/// This was defect 2 — the event builder ignored `Event::Alias`, so a step
 /// written `uses: *action` was *absent from the document*: not un-flagged, just gone, with no error
 /// and no refusal. Fixed in our own code by keeping the dependency's anchor ids and resolving the
 /// alias, so no new dependency and no `unsafe` was needed.

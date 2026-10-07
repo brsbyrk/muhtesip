@@ -280,7 +280,7 @@ fn a_run_level_refusal_annotates_without_a_file() {
 //
 // `jsonschema` against the official 2.1.0 schema is the strong check, but it needs the 112 KB schema
 // file and a network fetch, so it is deliberately NOT in the suite. These tests assert the
-// invariants that validation would; docs/ROADMAP.md records the manual run.
+// invariants that validation would — checked here, on a payload that needs no network.
 
 /// A SARIF document for `text`, and the parsed value.
 fn sarif_of(source: &str, text: &str) -> (String, serde_json::Value) {
