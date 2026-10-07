@@ -1,0 +1,12 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: example/toolbox@v4
+      - name: build
+        run: cargo build

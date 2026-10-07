@@ -1,0 +1,26 @@
+[package]
+name = "muhtesip"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "A fast, embeddable linter for CI workflow files."
+license.workspace = true
+repository.workspace = true
+documentation = "https://docs.rs/muhtesip"
+# Outside the package directory on purpose: the repository's README is the project's front page, and
+# one copy of it is the point. `cargo package` is what decides whether that ships — see the CI step.
+readme = "../../README.md"
+keywords = ["github-actions", "lint", "linter", "ci", "yaml"]
+categories = ["development-tools", "config"]
+
+[dependencies]
+globset.workspace = true
+regex.workspace = true
+thiserror.workspace = true
+yaml-rust2.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[lints]
+workspace = true

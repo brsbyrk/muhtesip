@@ -1,0 +1,26 @@
+name: action-ref
+on: push
+jobs:
+  # The one `uses` that does not sit on a step: a job calling a reusable workflow.
+  call:
+    uses: owner/repo/.github/workflows/ci.yml@v1
+  accepted:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: owner/repo/path@main
+      - uses: $/.github/actions/hello
+      - uses: $/
+      - uses: ./
+      - uses: ./local/action
+      - uses: docker://alpine:3.8
+      - uses: docker://ghcr.io/owner/image
+  rejected:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout
+      - uses: checkout@v4
+      - uses: owner/repo@
+      - uses: '@actions/checkout@v4' # not reported: the owner grammar is not documented
+      - uses: $/actions/my-action@v1
+      - uses: docker://

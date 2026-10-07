@@ -1,0 +1,33 @@
+[package]
+name = "muhtesip-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "The muhtesip command line: lint CI workflow files and print the findings."
+license.workspace = true
+repository.workspace = true
+documentation = "https://docs.rs/muhtesip-cli"
+readme = "README.md"
+keywords = ["github-actions", "lint", "linter", "ci", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+
+# The binary keeps the project's name even though the crate cannot: `cargo install muhtesip-cli`
+# installs a command called `muhtesip`, which is what a user types and what every document and script
+# in this repository already says.
+[[bin]]
+name = "muhtesip"
+path = "src/main.rs"
+
+[dependencies]
+# A version AND a path: the path is used while developing in this workspace, the version is what a
+# published crate depends on. A path alone makes `cargo publish` refuse outright — it cannot ship a
+# dependency that resolves only on the author's disk.
+muhtesip = { version = "0.1", path = "../muhtesip" }
+
+[dev-dependencies]
+# The tests parse the envelope with a real parser rather than comparing it to strings the same code
+# produced. Dev-only: the shipped binary writes JSON by hand and links no parser.
+serde_json.workspace = true
+
+[lints]
+workspace = true

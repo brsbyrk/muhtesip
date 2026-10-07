@@ -1,0 +1,22 @@
+[graph]
+# Green means: no advisory, no surprise license, one version per crate.
+all-features = true
+
+[advisories]
+version = 2
+
+[licenses]
+version = 2
+# This crate ships under MIT; what this list governs is what a DEPENDENCY may be. Keep it narrow so
+# a copyleft dep is loud rather than absorbed.
+allow = ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause",
+         "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "CC0-1.0", "MPL-2.0"]
+confidence-threshold = 0.93
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

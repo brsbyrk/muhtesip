@@ -1,0 +1,17 @@
+name: ci
+
+on: [push]
+
+permissions:
+  contents: read
+  contenst: write
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      issues: reed
+    steps:
+      - run: cargo build

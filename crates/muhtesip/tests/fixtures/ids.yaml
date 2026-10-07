@@ -1,0 +1,23 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - id: setup
+        run: echo one
+      - id: SETUP
+        run: echo two
+      - id: has space
+        run: echo three
+  build:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps: []
+  2fast:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps: []

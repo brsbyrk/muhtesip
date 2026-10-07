@@ -1,0 +1,19 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    if: true
+    steps:
+      - name: never runs
+        if: false
+        run: echo hello
+      - name: pointless wrapper
+        if: ${{ false }} || ${{ true }}
+        run: echo there
+      - name: decides something
+        if: ${{ github.event_name == 'push' }}
+        run: echo ok

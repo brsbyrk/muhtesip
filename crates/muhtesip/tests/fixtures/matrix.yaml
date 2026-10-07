@@ -1,0 +1,23 @@
+name: ci
+
+on: [push]
+
+jobs:
+  duplicated:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, ubuntu-latest]
+    steps:
+      - run: echo hi
+
+  nothing_to_exclude:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        exclude:
+          - os: windows-latest
+    steps:
+      - run: echo hi

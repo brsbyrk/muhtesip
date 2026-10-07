@@ -1,0 +1,15 @@
+name: ci
+
+on: [push]
+
+jobs:
+  bounded:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - run: echo ok
+
+  unbounded:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo bad

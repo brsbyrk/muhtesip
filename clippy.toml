@@ -1,0 +1,3 @@
+# clippy configuration. Keep msrv in step with Cargo.toml rust-version so clippy's
+# suggestions never propose an API newer than the crate supports.
+msrv = "1.85"

@@ -1,0 +1,18 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    branches-ignore: [dev]
+  issues:
+    paths: [src/**]
+  pull_request:
+    types: [opened, bogus]
+  schedulez: [cron]
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hi

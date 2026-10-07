@@ -1,0 +1,98 @@
+name: release
+
+# A tag publishes binaries; nothing else does.
+#
+# The crate is both a library and the `muhtesip` binary, so `cargo install muhtesip` covers anyone with a Rust
+# toolchain. This workflow is for everyone else: one prebuilt binary per platform, archived with a
+# SHA-256 beside it and attached to the release for the tag, so using the CLI needs no toolchain and no
+# network beyond the download.
+#
+# The crates.io publish is deliberately NOT here. It is a manual step, so a tag cannot publish a crate
+# nobody looked at (`cargo publish` refuses to redo a version, which makes every mistake permanent).
+#
+# Actions are pinned to commit SHAs because this workflow holds `contents: write`: a moved tag would
+# hand that permission to whoever moved it. The comments name the version each SHA came from.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    # A release build that hangs must fail the tag, not sit in the queue for six hours.
+    timeout-minutes: 30
+    strategy:
+      # A platform that fails must not cancel the others: three good binaries are still useful, and a
+      # cancelled job hides the reason.
+      fail-fast: false
+      matrix:
+        include:
+          # Native hosts only, so no `--target` and no cross toolchain to install.
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+          - { os: macos-latest, target: aarch64-apple-darwin }
+          - { os: macos-15-intel, target: x86_64-apple-darwin }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # master, via `toolchain:`
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@49a0bdc70d2e1b713ca9e2869b211fcce03d3c1c # v2
+
+      # A tag that disagrees with the manifest produces a release whose name lies about its contents,
+      # and a published version cannot be withdrawn. Cheap to check, impossible to undo.
+      - name: the tag must match the manifest version
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          manifest="$(grep -m1 '^version' Cargo.toml | cut -d'"' -f2)"
+          if [ "$tag" != "$manifest" ]; then
+            echo "tag ${GITHUB_REF_NAME} does not match Cargo.toml's version ${manifest}" >&2
+            exit 1
+          fi
+
+      - name: build
+        run: cargo build --release --locked -p muhtesip-cli
+
+      # The same script a human can run, so the packaging is exercised before a tag needs it.
+      - name: package
+        run: scripts/package-release.sh "${{ matrix.target }}" "${{ github.ref_name }}"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      # `gh` is on every runner and needs only the token, so the release is made by the same tool a
+      # human would use rather than by a third-party action.
+      - name: publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes \
+            dist/*

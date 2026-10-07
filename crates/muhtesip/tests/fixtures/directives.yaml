@@ -1,0 +1,11 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: example/toolbox@v4 # muhtesip: ignore[unpinned-action]
+      - uses: other/toolbox@v4

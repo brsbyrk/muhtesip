@@ -1,0 +1,5 @@
+# Suppress a finding for the workflows a glob matches, by matching its message.
+paths:
+  "**/bad.yaml":
+    ignore:
+      - "not pinned to an immutable commit"

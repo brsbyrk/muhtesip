@@ -1,0 +1,19 @@
+# Build output. ANCHORED on purpose: an unanchored `target/` or `out/` matches a directory of
+# that name at ANY depth, which silently ignores files you meant to track.
+/target/
+/dist/
+
+# Rust and editor leftovers.
+**/*.rs.bk
+Cargo.lock.orig
+.DS_Store
+/.direnv
+
+# Development working notes: the research inputs and the audit reports. Kept locally, never
+# published — the durable copy is whatever checkout happens to hold them.
+/out/
+
+# The bench harness was removed from the repository on 2026-10-07 (it vendored a corpus of
+# other people's workflows and a cargo target/ dir, 899 tracked files). Restore it locally with
+# `git checkout d632d43 -- bench`, and this keeps a restore out of the repo.
+/bench/

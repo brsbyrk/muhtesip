@@ -1,0 +1,10 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latests
+    steps:
+      - run: cargo build

@@ -1,0 +1,14 @@
+# rustfmt configuration — STABLE options only.
+#
+# Nightly-only options (imports_granularity, group_imports, wrap_comments, format_strings)
+# are deliberately absent: on a stable toolchain they are silently ignored, so `cargo fmt`
+# and CI disagree — and a crate-wide `cargo fmt` has rewritten dozens of unrelated files.
+# If you enable them, pin nightly in rust-toolchain.toml for everyone.
+edition = "2024"
+max_width = 100
+newline_style = "Unix"
+reorder_imports = true
+reorder_modules = true
+merge_derives = true
+use_field_init_shorthand = true
+use_try_shorthand = true

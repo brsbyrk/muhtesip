@@ -1,0 +1,62 @@
+name: ci
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+# Actions are pinned to commit SHAs, comments name the version: a tag is mutable, and the workflow that
+# runs on every push is where a moved tag would first be executed. `muhtesip` itself reports an unpinned
+# `uses:` as a warning, and it would be a poor advertisement to keep one in this repository.
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # master, via `toolchain:`
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@49a0bdc70d2e1b713ca9e2869b211fcce03d3c1c # v2
+      - name: fmt
+        run: cargo fmt --all -- --check
+      # --all-targets is the point: plain clippy does not lint test targets.
+      - name: clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: test
+        run: cargo test --workspace --all-features
+      # The docs are part of the product: a broken intra-doc link is a broken link on docs.rs.
+      - name: doc
+        run: cargo doc --workspace --no-deps --all-features
+        env:
+          RUSTDOCFLAGS: -D warnings
+      # What `cargo publish` would send, built and verified — so a packaging mistake is found here and
+      # not in the one command that cannot be undone.
+      #
+      # The library only. `cargo package -p muhtesip-cli` cannot run before the library is on
+      # crates.io: preparing it resolves against the registry and fails with "no matching package named
+      # muhtesip" (measured 2026-10-07; --no-verify and --offline do not help). The publish order
+      # verifies it for real — library first, then the CLI — so add the step here once the library is
+      # live.
+      - name: package
+        run: cargo package -p muhtesip
+      # The linter lints its own pipeline. This is a gate, not a demo: unpinning an action here fails
+      # the build, so the repository's advice is enforced on the repository.
+      - name: dogfood
+        run: cargo run --quiet --release -p muhtesip-cli -- .github/workflows
+      - name: deny
+        uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2
+
+  # The declared floor, checked rather than trusted. It was wrong once: the code used a let-chain
+  # (stable in 1.88) while the manifest claimed 1.85, and nothing in the gate could tell.
+  msrv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # master, via `toolchain:`
+        with:
+          toolchain: 1.85.0
+      - uses: Swatinem/rust-cache@49a0bdc70d2e1b713ca9e2869b211fcce03d3c1c # v2
+      - name: check on the declared rust-version
+        run: cargo check --workspace --all-targets

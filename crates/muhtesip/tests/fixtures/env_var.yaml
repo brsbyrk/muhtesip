@@ -1,0 +1,19 @@
+name: ci
+
+on: [push]
+
+env:
+  GOOD_NAME: ok
+  BAD NAME: nope
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      ALSO=BAD: nope
+    steps:
+      - name: a step
+        run: echo hi
+        env:
+          amp&name: nope

@@ -1,0 +1,15 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: example/toolbox@0123456789abcdef0123456789abcdef01234567
+      - name: build locally
+        uses: ./actions/build
+      - name: no action here
+        run: cargo build

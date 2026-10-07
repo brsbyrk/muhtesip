@@ -1,0 +1,17 @@
+name: ci
+
+on: [push]
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [setup, setup, deploy]
+    steps:
+      - run: cargo build
+
+  setup:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo setup

@@ -1,0 +1,7 @@
+[toolchain]
+# Track stable rather than pinning a patch version: a pinned channel that is not installed
+# makes `cargo` try to download a toolchain on first use. The MSRV lives in Cargo.toml
+# `rust-version`, which is what cargo and clippy actually enforce.
+channel = "stable"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

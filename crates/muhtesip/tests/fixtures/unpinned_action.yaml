@@ -1,0 +1,24 @@
+name: ci
+
+on: [push]
+
+jobs:
+  pinned:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: example/toolbox@0123456789abcdef0123456789abcdef01234567
+      - uses: ./
+      - uses: $/.github/actions/build
+      - uses: ./local/action
+
+  unpinned:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: example/toolbox@v4
+      - uses: example/toolbox@main
+
+  reusable:
+    timeout-minutes: 5
+    uses: owner/repo/.github/workflows/ci.yml@v1

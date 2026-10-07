@@ -1,0 +1,28 @@
+name: ci
+
+on: [push]
+
+jobs:
+  linux:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: unix shell on linux
+        shell: sh
+        run: echo ok
+      - name: windows shell on linux
+        shell: powershell
+        run: echo bad
+  windows:
+    timeout-minutes: 15
+    runs-on: windows-latest
+    steps:
+      - name: unix shell on windows
+        shell: sh
+        run: echo bad
+      - name: typo
+        shell: bsh
+        run: echo bad
+      - name: custom shell
+        shell: "perl {0}"
+        run: echo ok

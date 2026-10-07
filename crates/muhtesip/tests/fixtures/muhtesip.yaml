@@ -1,0 +1,6 @@
+# A project configuration: escalate one rule, turn another off.
+rules:
+  unpinned-action:
+    severity: error
+  missing-timeout:
+    enabled: false
