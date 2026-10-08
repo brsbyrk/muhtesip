@@ -101,6 +101,6 @@ Conventions: [`AGENTS.md`](AGENTS.md).
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+MIT — see [`LICENSE`](LICENSE). Third-party notices: [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
 
 *Named for the Ottoman market inspector, whose job was checking that goods met the standard.*
