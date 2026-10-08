@@ -34,7 +34,8 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   action it could not find, which points at the symptom rather than at the reference that was written.
 - **Documented forms, all accepted:** `{owner}/{repo}@{ref}`, `{owner}/{repo}/{path}@{ref}`, `$/path`
   (the same repository, at the running commit), `./path` (the runner's checked-out workspace), and
-  `docker://{image}:{tag}`. The `$/` form is on GitHub's workflow-syntax page.
+  `docker://{image}:{tag}`. The `$/` form is on GitHub's workflow-syntax page; no actionlint rule id
+  covers it.
 - **Not flagged:** anything starting `./`, including `./` alone, which is the action at the repository
   root. Measured: the corpus contains 50 of those among 1,527 `uses:` values, every one in GitHub's own
   action repositories, and a stricter reading of this rule rejected exactly those. A bare `$/` is
@@ -61,8 +62,8 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
 - **Catches:** a `runs-on` label that is not one GitHub hosts.
 - **Why:** a misspelt or invented label never schedules, so the workflow fails for a reason that is
   invisible until a run is attempted.
-- **Not flagged:** a documented hosted label (the table is the union of GitHub's docs and a curated
-  third-party list — see `crates/muhtesip/src/data/`), a self-hosted preset (`linux`, `macos`, `windows`,
+- **Not flagged:** a documented hosted label (the union of GitHub's docs and actionlint's list — see
+  `crates/muhtesip/src/data/`), a self-hosted preset (`linux`, `macos`, `windows`,
   `x64`, `arm`, `arm64`), any list containing `self-hosted` (a self-hosted runner's own labels are
   unknowable without configuration), and any value containing `${{ … }}` (an expression has no
   value to check).
@@ -77,12 +78,11 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   authority than the author intended — or the author believes a permission was granted that never
   was.
 - **Checked:** the workflow-level block and each job's block.
-- **Accepted scopes** are the union of GitHub's docs table and a curated third-party list (neither is
-  a superset — the docs add `code-quality` and `vulnerability-alerts`, the other adds `models` and
-  `repository-projects`). Accepted access is `read`, `write`, `none`; a whole-block value is
-  `read-all`, `write-all`, or `{}`.
-- **Not flagged:** expressions, and per-scope access narrowing (`id-token: read` is accepted — a
-  per-scope claim goes stale and false-positives).
+- **Accepted scopes** are the union of GitHub's docs table and actionlint's list — neither is a
+  superset. Accepted access is `read`, `write`, `none`; a whole-block value is `read-all`,
+  `write-all`, or `{}`.
+- **Not flagged:** expressions, and per-scope access narrowing (actionlint flags `id-token: read`;
+  a per-scope claim goes stale and false-positives).
 
 ## job-needs
 
@@ -91,8 +91,8 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
 - **Why:** `needs` decides execution order, so a broken graph either never schedules the job or
   schedules it before what it depends on.
 - **Cycle reporting:** every job **in** a cycle is reported. A job that merely *depends* on a cycle
-  is not — a leftover-node heuristic (Kahn's algorithm) would wrongly accuse it, and stopping at the
-  first rotated cycle would hide the rest.
+  is not — a leftover-node heuristic (Kahn's algorithm) would wrongly accuse it. actionlint reports
+  only the first cycle.
 - **Not flagged:** expressions, and case differences (`Build` and `BUILD` are the same job id).
 
 ## id
@@ -164,8 +164,8 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   value the author thought it had.
 - **Checked:** the workflow-level, job-level, and step-level `env` blocks.
 - **Not flagged:** a name built from an expression (it has no value to judge).
-- **Gap:** a `container`'s and each `service`'s `env` names are not checked; the model only reaches
-  workflow/job/step `env`.
+- **Gap:** actionlint also checks a `container`'s and each `service`'s `env` names; the model only
+  reaches workflow/job/step `env`.
 
 ## credentials
 
@@ -185,9 +185,8 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   is dead configuration that reads as if it filters something.
 - **Not flagged:** the same value in two *different* rows (that is legitimate), an `exclude` that
   has rows to filter, an `exclude` alongside an `include`, and any value built from an expression.
-- **Not yet:** checking that an `exclude` value actually matches a matrix value — that needs subset
-  matching over objects and arrays, which is a false-positive-prone analysis of its own and a later
-  slice.
+- **Not yet:** checking that an `exclude` value actually matches a matrix value — actionlint does
+  this with subset matching over objects and arrays, a false-positive-prone analysis of its own.
 
 ## glob
 
@@ -204,8 +203,8 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   backwards range, and a range with no end are all reported.
 - **Not flagged:** a pattern built from an expression, and any filter that holds no patterns
   (`types`, `workflows`, …).
-- **Adapted from** another linter's `globValidator` state machine (`crates/muhtesip/src/glob.rs`), with
-  two documented deviations: no column tracking, and no whitespace-skipping when peeking.
+- **Ported from** actionlint's `globValidator` (`crates/muhtesip/src/glob.rs`), with two deviations:
+  no column tracking, and no whitespace-skipping when peeking.
 
 ## events
 
@@ -221,16 +220,17 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   refusal does not say which name or filter was wrong. A schedule is the same class: a cron that
   fires every minute is silently stretched to the five-minute floor, so the author gets fewer runs
   than they wrote and nothing tells them.
-- **Data:** trigger names and their activity types are a table in `crates/muhtesip/src/data/`, taken from
-  GitHub's "Events that trigger workflows". Three names were decided by hand: `actor` is a documentation *section* about scheduled
+- **Data:** trigger names and their activity types are a table in `crates/muhtesip/src/data/`, from
+  GitHub's "Events that trigger workflows" and actionlint's table. Three names were decided by hand:
+  `actor` is a documentation *section* about scheduled
   workflows, and `pull_request_comment` is listed by the docs itself as "(use `issue_comment`)" —
   both are rejected, because neither is an event; `repository_dispatch` is accepted with unbounded
   `types`, because its activity types are caller-defined `event_type` values.
 - **Schedules:** the field bounds are the usual crontab ones (minute 0-59, hour 0-23, day-of-month
   1-31, month 1-12, day-of-week 0-6, Sunday 0), and `@daily`-style descriptors are rejected because
   the docs state that outright. The docs name the operators but not the bounds and not whether names
-  (`JAN`, `MON`) are allowed; names are **accepted**, and refusing a cron the platform runs is the
-  false positive this rule exists to avoid. The five-minute
+  (`JAN`, `MON`) are allowed; names are **accepted**, as actionlint accepts them, and refusing a cron
+  the platform runs is the false positive this rule exists to avoid. The five-minute
   floor and the timezone key are both documented: "The shortest interval you can run scheduled
   workflows is once every 5 minutes", and "By default, scheduled workflows run in UTC. You can
   optionally specify a timezone using an IANA timezone string". The interval is computed, not
@@ -247,10 +247,9 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   `workflow_call` input that also carries a default** is reported, because every caller must pass it so
   the default can never apply — while the same pair on a **manual** input is correct, since the browser
   pre-fills it, which is why the platform's own documented example uses exactly that shape. The type
-  lists come from the docs; the consistency checks come from GitHub's changelog for manual-workflow
-  input types; the judgement lives in `crates/muhtesip/src/inputs.rs` and the schema in
-  `crates/muhtesip/src/data/mod.rs`. The corpus holds two real instances, both a required input with a
-  dead default.
+  lists come from the docs; the consistency checks come from actionlint's `rule_events.go`, which
+  cites GitHub's changelog for manual-workflow input types; the judgement lives in
+  `crates/muhtesip/src/inputs.rs` and the schema in `crates/muhtesip/src/data/mod.rs`.
 - **Not yet:** a *caller's* `with:` against the callee's declared inputs. That needs the called
   workflow's document, which the library cannot fetch — it never touches the filesystem — so supplying
   it is an API decision of its own, recorded as **B8b-2** rather than left as an apparent omission.
@@ -264,7 +263,7 @@ change them — or turn a rule off — with a per-rule override (`muhtesip::Rule
   bracket).
 - **Why:** a directive that suppresses nothing while *reading* as a suppression is the worst shape a
   suppression can take — the author believes the finding is silenced, so their red build looks like a
-  bug rather than a typo.
+  bug rather than a typo. zizmor stays silent here, so this is a deliberate departure.
 - **Precision:** prose that merely mentions the marker (`# muhtesip: ignore this for now`) is **not**
   reported, and neither is the wrong-case marker. Only the shapes that could only be an attempt at a
   directive are; a linter that flags prose gets switched off.

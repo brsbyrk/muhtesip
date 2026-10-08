@@ -1,14 +1,12 @@
 //! The inputs the two events declare, judged against the platform's schema.
 //!
-//! Data drives it: the type lists and the input cap live in `src/data/`, each quoted from the
-//! workflow-syntax reference. The judgement is a pure function of the declarations, so it is
-//! testable without a registry, a file, or a finding.
+//! Data drives it: the type lists and the input cap live in `src/data/`. The judgement is a pure
+//! function of the declarations, so it is testable without a registry, a file, or a finding.
 //!
-//! The judgement has two parts:
-//!
-//! - **Which types each event accepts**, and that a `workflow_call` input must declare one at all.
-//! - **Consistency**: a default that contradicts the declared type, `type: choice` with no `options`,
-//!   `options` on anything else, a duplicated option, and a default that is not one of the options.
+//! Two sources, and where one is silent the other decides: GitHub's docs say which types each event
+//! accepts and that a `workflow_call` input must declare one, and actionlint's `rule_events.go` gives
+//! the consistency checks — a default that contradicts its type, `choice` with no `options`, options
+//! on anything else, a duplicated option, and a default that is not one of them.
 //!
 //! One asymmetry is deliberate and is the reason the required-plus-default check names one event only:
 //! a **reusable workflow's** required input must be passed by the caller, so its default can never

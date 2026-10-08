@@ -1,17 +1,17 @@
 //! Inline suppression comments: `# muhtesip: ignore[<rule>, ...]`.
 //!
-//! The marker is `# muhtesip: ignore[<rule>, ...]`: the names are comma-separated and trimmed, and
-//! the comment may carry a trailing explanation. Three properties, all forced by this linter's
-//! model:
+//! The marker is `# muhtesip: ignore[<rule>, ...]` — the shape zizmor uses, names comma-separated and
+//! trimmed, so one habit carries over. Three properties, all forced by this linter's model:
 //!
 //! - **The text is scanned, not the document.** The YAML dependency skips comments, so there is no
 //!   comment to read out of a parsed `Document`.
 //! - **Coverage is by indentation, not by span.** A directive covers its own line and every
 //!   following line more indented than it: the block it introduces. A trailing comment on `run: |`
-//!   therefore covers the script, and one on a job's `build:` line covers the whole job. A true
-//!   span would need columns, and a finding here carries a line.
-//! - **A directive that cannot do anything is reported, not ignored.** A directive that names a
-//!   rule this build does not have — or that lost its brackets —
+//!   therefore covers the script, and one on a job's `build:` line covers the whole job. zizmor
+//!   matches a span; a finding here carries a line.
+//! - **A directive that cannot do anything is reported, not ignored.** Where zizmor stays silent
+//!   about a misspelled rule name, a directive that names a rule this build does not have — or that
+//!   lost its brackets —
 //!   *reads* as a suppression and suppresses nothing, so the author's red build looks like a bug
 //!   rather than a comment. Deciding whether a name exists needs the registry, so this module only
 //!   reports what the text says ([`Directives::named`], [`Directives::malformed`]) and the
@@ -206,7 +206,7 @@ mod tests {
 
     #[test]
     fn a_trailing_comment_covers_the_block_it_introduces() {
-        // the comment sits on the `run: |` line and covers the script.
+        // zizmor's documented example: the comment sits on the `run: |` line and covers the script.
         let text = "\
 jobs:
   build:
@@ -359,7 +359,7 @@ d: 3
 
     #[test]
     fn a_directive_inside_a_literal_block_does_not_reach_the_blocks_other_lines() {
-        // YAML sees this comment as string content. The
+        // YAML sees this comment as string content, as zizmor documents. The
         // supported placement is the line that introduces the block.
         let text = "\
 a: |

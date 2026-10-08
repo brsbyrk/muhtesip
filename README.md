@@ -6,6 +6,8 @@ An **embeddable** linter for CI workflow files: a Rust library that reads a work
 returns findings. It never prints, exits, or touches the filesystem. A thin `muhtesip` binary ships
 on top for CI.
 
+A small rule set in an embeddable form — not a replacement for actionlint or zizmor.
+
 ```rust
 let findings = muhtesip::lint(workflow_text)?;
 for finding in &findings {
