@@ -1,8 +1,9 @@
 //! Validate the filter patterns the platform accepts in `branches`, `tags`, and `paths`.
 //!
-//! Ported from actionlint's `globValidator` state machine, with two deliberate differences: no column
-//! tracking (a finding points at the pattern's line), and no whitespace skipping while peeking (every
-//! character is read). The detections are the same.
+//! Ported on 2026-10-04 from `glob.go` in actionlint's `globValidator` state machine, with two
+//! deliberate differences: no column tracking (a finding points at the pattern's line), and no
+//! whitespace skipping while peeking (every character is read, where Go's `text/scanner` looks past
+//! it). The detections are the same.
 //!
 //! actionlint is MIT licensed, and this port carries its notice:
 //!
